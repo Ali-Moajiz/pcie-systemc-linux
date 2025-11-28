@@ -1,0 +1,3 @@
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/pcie_test.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/edit_cache.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/rebuild_cache.dir

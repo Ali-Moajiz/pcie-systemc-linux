@@ -1,9 +1,35 @@
 #ifndef PCIE_SYSTEM_TOP_H
 #define PCIE_SYSTEM_TOP_H
 
+/*                  ---> T H E  F L O W  <---
+
+
+
+ PCIE Transaction                        TLM initiator sockets
+      Layer           .----------------.      (BAR0-BAR5)
+ [TLP packet side]    |                |--------------------->
+                      |                |--------------------->
+                      |                |--------------------->  [User logic side]
+   TLM target socket  | PCIeController |--------------------->
+   ------------------>|                |--------------------->
+                      |                |--------------------->
+                      |                |
+ TLM initiator socket |                |  TLM target socket
+   <------------------|                | (DMA to the PCIE interface)
+                      |                |<---------------------
+                      |                |
+                      |                | MSI-X interrupts
+                      |                | (sc_signal vector)
+                      |                |<---------------------
+                      '----------------'
+
+
+*/
+
 #include <systemc>
 #include <tlm>
 #include "matrix_multiplier_pcie.h"
+#include "pf-config.h"
 // Include Xilinx PCIe controller headers
 // #include "pcie/xilinx/pcie_ep_device.h"
 // #include "pcie/xilinx/pcie_controller.h"
@@ -15,6 +41,7 @@ SC_MODULE(pcie_system_top)
 public:
     // Your matrix multiplier endpoint
     matrix_multiplier_pcie *matrix_device;
+    PCIeController *pcie_controller;
 
     // Xilinx PCIe controller (you'll instantiate this)
     // xilinx_pcie_controller *pcie_ctrl;
@@ -24,27 +51,20 @@ public:
 
     SC_CTOR(pcie_system_top)
     {
-        // Instantiate the matrix multiplier device
+        PhysFuncConfig pf_cfg; // Need to initiallize at once, Going with the default values
+
         matrix_device = new matrix_multiplier_pcie("matrix_device");
+        pcie_controller = new PCIeController("xilinx pcie controller", pf_cfg, true);
 
         // Connect interrupt
-        matrix_device->interrupt(irq_signal);
-
-        // TODO: Instantiate Xilinx PCIe controller
-        // pcie_ctrl = new xilinx_pcie_controller("pcie_ctrl");
+        matrix_device->interrupt(pcie_controller->signals_irq[0]);
 
         // Connect BAR0 to PCIe controller's target socket
-        // This is how the PCIe controller will forward MMIO transactions to your device
-        // pcie_ctrl->bar0_initiator_socket.bind(matrix_device->bar0_target_socket);
-
+        pcie_controller->bar0_init_socket.bind(matrix_device->bar0_target_socket);
         // Connect DMA initiator from device to PCIe controller's target socket
-        // This is how your device performs DMA to host memory
-        // matrix_device->dma_initiator_socket.bind(pcie_ctrl->dma_target_socket);
+        matrix_device->dma_initiator_socket.bind(pcie_controller->dma_tgt_socket);
 
-        // Connect interrupt to PCIe controller
-        // pcie_ctrl->interrupt_in(irq_signal);
-
-        cout << "==================================================" << endl;
+        pcie_controller->cout << "==================================================" << endl;
         cout << "Matrix Multiplier PCIe Device Initialized" << endl;
         cout << "==================================================" << endl;
         cout << "Register Map (BAR0):" << endl;
@@ -62,7 +82,7 @@ public:
     ~pcie_system_top()
     {
         delete matrix_device;
-        // delete pcie_ctrl;
+        delete pcie_controller;
     }
 };
 

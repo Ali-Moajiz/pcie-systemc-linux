@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named pcie_model
+
+# Build rule for target.
+pcie_model: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 pcie_model
+.PHONY : pcie_model
+
+# fast build rule for target.
+pcie_model/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/build
+.PHONY : pcie_model/fast
+
+#=============================================================================
 # Target rules for targets named pcie_test
 
 # Build rule for target.
@@ -128,6 +141,54 @@ pcie_test: cmake_check_build_system
 pcie_test/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_test.dir/build.make CMakeFiles/pcie_test.dir/build
 .PHONY : pcie_test/fast
+
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.o: home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.o
+
+# target to build an object file
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o
+
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.i: home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.i
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.i
+
+# target to preprocess a source file
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.i
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.i
+
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.s: home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.s
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.s
+
+# target to generate assembly for a file
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.s
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.s
+
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.o: home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.o
+
+# target to build an object file
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o
+
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.i: home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.i
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.i
+
+# target to preprocess a source file
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.i
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.i
+
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.s: home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.s
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.s
+
+# target to generate assembly for a file
+home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pcie_model.dir/build.make CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.s
+.PHONY : home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.s
 
 testbench.o: testbench.cpp.o
 .PHONY : testbench.o
@@ -161,7 +222,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... pcie_model"
 	@echo "... pcie_test"
+	@echo "... home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.o"
+	@echo "... home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.i"
+	@echo "... home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.s"
+	@echo "... home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.o"
+	@echo "... home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.i"
+	@echo "... home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.s"
 	@echo "... testbench.o"
 	@echo "... testbench.i"
 	@echo "... testbench.s"

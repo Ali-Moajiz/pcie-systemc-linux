@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/local/systemc-git/include -I/home/moajiz/pcie-systemc-linux/custom-endpoint/include -I/home/moajiz/pcie-systemc-linux/custom-endpoint/pcie/xilinx
+CXX_INCLUDES = -I/usr/local/systemc-git/include -I/home/moajiz/pcie-systemc-linux/custom-endpoint/include -I/home/moajiz/pcie-systemc-linux/custom-endpoint/../pcie-model/tlm-modules -I/home/moajiz/pcie-systemc-linux/custom-endpoint/../pcie-model/libpcie -I/home/moajiz/pcie-systemc-linux/custom-endpoint/../pcie-model/libpcie/src
 
 CXX_FLAGS =  -Wall -Wextra -g -O2 -DSC_INCLUDE_DYNAMIC_PROCESSES -std=c++17
 

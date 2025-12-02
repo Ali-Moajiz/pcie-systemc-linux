@@ -37,35 +37,60 @@ else()
 endif()
 
 # ======================================================
-# Include directories
+# Include SystemC
 # ======================================================
-include_directories(
-    ${SYSTEMC_HOME}/include
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/pcie/xilinx
-)
-
-# ======================================================
-# Link directories
-# ======================================================
+include_directories(${SYSTEMC_HOME}/include)
 link_directories(${SYSTEMC_LIBRARY_DIRS})
 
 # ======================================================
-# Source files
+# Build PCIe Model as Static Library
 # ======================================================
+set(PCIE_MODEL_DIR ${PROJECT_SOURCE_DIR}/../pcie-model)
+
+file(GLOB PCIE_MODEL_SOURCES
+    "${PCIE_MODEL_DIR}/libpcie/src/pcie/*.c"
+    "${PCIE_MODEL_DIR}/libpcie/src/pcie/*.cc"
+    "${PCIE_MODEL_DIR}/libpcie/*.c"
+    "${PCIE_MODEL_DIR}/libpcie/*.cc"
+    "${PCIE_MODEL_DIR}/tlm-modules/*.c"
+    "${PCIE_MODEL_DIR}/tlm-modules/*.cc"
+)
+
+
+# Create PCIe model static library
+add_library(pcie_model STATIC ${PCIE_MODEL_SOURCES})
+
+# Set include directories for the library (PUBLIC so consumers get them too)
+target_include_directories(pcie_model PUBLIC
+    ${PCIE_MODEL_DIR}/tlm-modules
+    ${PCIE_MODEL_DIR}/libpcie
+    ${PCIE_MODEL_DIR}/libpcie/src
+)
+
+message(STATUS "PCIe model library configured")
+
+# ======================================================
+# Build Your Testbench Executable
+# ======================================================
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 set(SOURCES
     testbench.cpp
 )
 
-# ======================================================
-# Executable
-# ======================================================
+
 add_executable(pcie_test ${SOURCES})
 
+# target_compile_options(pcie_test PRIVATE -g -O1 -fsanitize=address -fno-omit-frame-pointer)
+
 # ======================================================
-# Link SystemC
+# Link Libraries
 # ======================================================
-target_link_libraries(pcie_test systemc pthread)
+target_link_libraries(pcie_test
+    pcie_model      # PCIe model static library
+    systemc         # SystemC library
+    pthread         # Threading support
+)
 
 # ======================================================
 # Runtime library path (LD_LIBRARY_PATH auto)
@@ -77,4 +102,5 @@ set_target_properties(pcie_test PROPERTIES
 
 message(STATUS "SystemC include: ${SYSTEMC_HOME}/include")
 message(STATUS "SystemC library: ${SYSTEMC_LIB_PATH}")
+message(STATUS "PCIe model: ${PCIE_MODEL_DIR}")
 message(STATUS "Configuration complete!")

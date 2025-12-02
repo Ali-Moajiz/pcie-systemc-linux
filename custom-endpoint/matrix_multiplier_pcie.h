@@ -11,36 +11,33 @@ using namespace sc_dt;
 using namespace std;
 
 // Register Map for BAR0
-#define REG_CONTROL 0x0000      // Control register
-#define REG_STATUS 0x0004       // Status register
-#define REG_DIM_N 0x0008        // Matrix dimension N
-#define REG_MATRIX_A_PTR 0x0010 // DMA pointer to Matrix A (host memory)
-#define REG_MATRIX_B_PTR 0x0018 // DMA pointer to Matrix B (host memory)
-#define REG_MATRIX_C_PTR 0x0020 // DMA pointer to Matrix C (host memory)
-#define REG_INT_STATUS 0x0028   // Interrupt status
-#define REG_INT_ENABLE 0x002C   // Interrupt enable
+#define REG_CONTROL 0x0000
+#define REG_STATUS 0x0004
+#define REG_DIM_N 0x0008
+#define REG_MATRIX_A_PTR 0x0010
+#define REG_MATRIX_B_PTR 0x0018
+#define REG_MATRIX_C_PTR 0x0020
+#define REG_INT_STATUS 0x0028
+#define REG_INT_ENABLE 0x002C
 
 // Control Register Bits
-#define CTRL_START (1 << 0) // Start computation
-#define CTRL_RESET (1 << 1) // Reset device
+#define CTRL_START (1 << 0)
+#define CTRL_RESET (1 << 1)
 
 // Status Register Bits
-#define STATUS_IDLE (1 << 0)  // Device is idle
-#define STATUS_BUSY (1 << 1)  // Device is busy
-#define STATUS_DONE (1 << 2)  // Computation done
-#define STATUS_ERROR (1 << 3) // Error occurred
+#define STATUS_IDLE (1 << 0)
+#define STATUS_BUSY (1 << 1)
+#define STATUS_DONE (1 << 2)
+#define STATUS_ERROR (1 << 3)
 
 // Interrupt Bits
-#define INT_DONE (1 << 0) // Computation done interrupt
+#define INT_DONE (1 << 0)
 
 SC_MODULE(matrix_multiplier_pcie)
 {
 public:
-    // TLM sockets
     tlm_utils::simple_target_socket<matrix_multiplier_pcie> bar0_target_socket;
     tlm_utils::simple_initiator_socket<matrix_multiplier_pcie> dma_initiator_socket;
-
-    // Interrupt output
     sc_out<bool> interrupt;
 
     SC_CTOR(matrix_multiplier_pcie)
@@ -48,18 +45,20 @@ public:
           dma_initiator_socket("dma_initiator_socket"),
           interrupt("interrupt")
     {
-        // Register TLM callbacks
         bar0_target_socket.register_b_transport(this, &matrix_multiplier_pcie::bar0_b_transport);
-
-        // Initialize registers
         reset_device();
-
-        // Spawn computation thread
         SC_THREAD(compute_thread);
+        SC_THREAD(interrupt_controller);
+        sensitive << interrupt_update_event;
+        dont_initialize();
+    }
+
+    void start_of_simulation()
+    {
+        interrupt.write(false);
     }
 
 private:
-    // Device registers
     uint32_t reg_control;
     uint32_t reg_status;
     uint32_t reg_dim_n;
@@ -68,12 +67,10 @@ private:
     uint64_t reg_matrix_c_ptr;
     uint32_t reg_int_status;
     uint32_t reg_int_enable;
-
-    // Internal signals
     sc_event start_event;
+    sc_event interrupt_update_event;
     bool computation_requested;
 
-    // Reset device state
     void reset_device()
     {
         reg_control = 0;
@@ -85,10 +82,19 @@ private:
         reg_int_status = 0;
         reg_int_enable = 0;
         computation_requested = false;
-        interrupt.write(false);
     }
 
-    // BAR0 target socket handler (MMIO access from host)
+    // Dedicated thread to handle interrupt signal updates
+    void interrupt_controller()
+    {
+        while (true)
+        {
+            wait();
+            bool irq = (reg_int_status & reg_int_enable) != 0;
+            interrupt.write(irq);
+        }
+    }
+
     void bar0_b_transport(tlm::tlm_generic_payload & trans, sc_time & delay)
     {
         tlm::tlm_command cmd = trans.get_command();
@@ -112,10 +118,9 @@ private:
         }
 
         trans.set_response_status(tlm::TLM_OK_RESPONSE);
-        delay += sc_time(10, SC_NS); // Simulated register access time
+        delay += sc_time(10, SC_NS);
     }
 
-    // Handle MMIO reads
     void handle_mmio_read(uint64_t addr, unsigned char *data, unsigned int len)
     {
         uint32_t value = 0;
@@ -178,11 +183,19 @@ private:
         memcpy(data, &value, len);
     }
 
-    // Handle MMIO writes
     void handle_mmio_write(uint64_t addr, unsigned char *data, unsigned int len)
     {
-        uint32_t value;
-        memcpy(&value, data, len);
+        uint32_t value = 0;
+        uint64_t value64 = 0;
+
+        if (len == 4)
+        {
+            memcpy(&value, data, 4);
+        }
+        else if (len == 8)
+        {
+            memcpy(&value64, data, 8);
+        }
 
         switch (addr)
         {
@@ -210,7 +223,7 @@ private:
         case REG_MATRIX_A_PTR:
             if (len == 8)
             {
-                memcpy(&reg_matrix_a_ptr, data, 8);
+                reg_matrix_a_ptr = value64;
             }
             else
             {
@@ -223,7 +236,7 @@ private:
         case REG_MATRIX_B_PTR:
             if (len == 8)
             {
-                memcpy(&reg_matrix_b_ptr, data, 8);
+                reg_matrix_b_ptr = value64;
             }
             else
             {
@@ -236,7 +249,7 @@ private:
         case REG_MATRIX_C_PTR:
             if (len == 8)
             {
-                memcpy(&reg_matrix_c_ptr, data, 8);
+                reg_matrix_c_ptr = value64;
             }
             else
             {
@@ -247,7 +260,6 @@ private:
             reg_matrix_c_ptr = (reg_matrix_c_ptr & 0xFFFFFFFF) | ((uint64_t)value << 32);
             break;
         case REG_INT_STATUS:
-            // Write 1 to clear
             reg_int_status &= ~value;
             update_interrupt();
             break;
@@ -260,11 +272,10 @@ private:
         }
     }
 
-    // DMA read from host memory
     bool dma_read(uint64_t addr, unsigned char *data, unsigned int len)
     {
         tlm::tlm_generic_payload trans;
-        sc_time delay = sc_time(50, SC_NS); // DMA latency
+        sc_time delay = sc_time(50, SC_NS);
 
         trans.set_command(tlm::TLM_READ_COMMAND);
         trans.set_address(addr);
@@ -281,11 +292,10 @@ private:
         return trans.is_response_ok();
     }
 
-    // DMA write to host memory
     bool dma_write(uint64_t addr, unsigned char *data, unsigned int len)
     {
         tlm::tlm_generic_payload trans;
-        sc_time delay = sc_time(50, SC_NS); // DMA latency
+        sc_time delay = sc_time(50, SC_NS);
 
         trans.set_command(tlm::TLM_WRITE_COMMAND);
         trans.set_address(addr);
@@ -302,14 +312,12 @@ private:
         return trans.is_response_ok();
     }
 
-    // Update interrupt line
     void update_interrupt()
     {
-        bool irq = (reg_int_status & reg_int_enable) != 0;
-        interrupt.write(irq);
+        // Notify the interrupt controller thread to update the signal
+        interrupt_update_event.notify();
     }
 
-    // Main computation thread
     void compute_thread()
     {
         while (true)
@@ -326,10 +334,8 @@ private:
             cout << "[" << sc_time_stamp() << "] Starting matrix multiplication (N="
                  << reg_dim_n << ")" << endl;
 
-            // Perform matrix multiplication
             bool success = perform_matrix_multiply();
 
-            // Update status
             if (success)
             {
                 reg_status = STATUS_IDLE | STATUS_DONE;
@@ -346,23 +352,20 @@ private:
         }
     }
 
-    // Actual matrix multiplication
     bool perform_matrix_multiply()
     {
         uint32_t n = reg_dim_n;
 
         if (n == 0 || n > 256)
-        { // Sanity check
+        {
             cout << "ERROR: Invalid matrix dimension" << endl;
             return false;
         }
 
-        // Allocate local buffers
         vector<float> matrix_a(n * n);
         vector<float> matrix_b(n * n);
         vector<float> matrix_c(n * n, 0.0f);
 
-        // DMA read Matrix A
         cout << "  Reading Matrix A from 0x" << hex << reg_matrix_a_ptr << endl;
         if (!dma_read(reg_matrix_a_ptr, (unsigned char *)matrix_a.data(), n * n * sizeof(float)))
         {
@@ -370,7 +373,6 @@ private:
             return false;
         }
 
-        // DMA read Matrix B
         cout << "  Reading Matrix B from 0x" << hex << reg_matrix_b_ptr << endl;
         if (!dma_read(reg_matrix_b_ptr, (unsigned char *)matrix_b.data(), n * n * sizeof(float)))
         {
@@ -378,7 +380,6 @@ private:
             return false;
         }
 
-        // Perform multiplication: C = A * B
         cout << "  Computing C = A * B..." << endl;
         for (uint32_t i = 0; i < n; i++)
         {
@@ -391,11 +392,9 @@ private:
                 }
                 matrix_c[i * n + j] = sum;
             }
-            // Simulate computation time
             wait(sc_time(n * 2, SC_NS));
         }
 
-        // DMA write Matrix C
         cout << "  Writing Matrix C to 0x" << hex << reg_matrix_c_ptr << endl;
         if (!dma_write(reg_matrix_c_ptr, (unsigned char *)matrix_c.data(), n * n * sizeof(float)))
         {
@@ -407,4 +406,4 @@ private:
     }
 };
 
-#endif // MATRIX_MULTIPLIER_PCIE_H
+#endif

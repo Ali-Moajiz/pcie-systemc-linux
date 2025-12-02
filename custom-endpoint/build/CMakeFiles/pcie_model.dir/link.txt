@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpcie_model.a CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o
+/usr/bin/ranlib libpcie_model.a

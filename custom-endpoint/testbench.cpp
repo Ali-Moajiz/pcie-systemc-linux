@@ -7,7 +7,6 @@
 using namespace sc_core;
 using namespace std;
 
-// Simple memory model to act as host memory
 SC_MODULE(host_memory)
 {
 public:
@@ -16,8 +15,6 @@ public:
     SC_CTOR(host_memory) : target_socket("target_socket")
     {
         target_socket.register_b_transport(this, &host_memory::b_transport);
-
-        // Allocate 16MB of host memory
         memory.resize(16 * 1024 * 1024, 0);
     }
 
@@ -28,8 +25,16 @@ public:
         unsigned char *ptr = trans.get_data_ptr();
         unsigned int len = trans.get_data_length();
 
+        std::cout << sc_time_stamp() << " [HOST_MEM] trans: cmd="
+                  << (cmd == tlm::TLM_READ_COMMAND ? "R" : "W")
+                  << " addr=0x" << std::hex << addr
+                  << " len=" << std::dec << len << std::endl;
+
         if (addr + len > memory.size())
         {
+            std::cerr << sc_time_stamp() << " [HOST_MEM] ADDRESS ERROR: addr+len=0x"
+                      << std::hex << (addr + len)
+                      << " memory_size=0x" << memory.size() << std::dec << std::endl;
             trans.set_response_status(tlm::TLM_ADDRESS_ERROR_RESPONSE);
             return;
         }
@@ -47,7 +52,6 @@ public:
         delay += sc_time(20, SC_NS);
     }
 
-    // Helper to write data to memory
     void write_data(uint64_t addr, void *data, size_t len)
     {
         if (addr + len <= memory.size())
@@ -56,7 +60,6 @@ public:
         }
     }
 
-    // Helper to read data from memory
     void read_data(uint64_t addr, void *data, size_t len)
     {
         if (addr + len <= memory.size())
@@ -69,16 +72,16 @@ private:
     vector<unsigned char> memory;
 };
 
-// Test driver that simulates PCIe host
 SC_MODULE(test_driver)
 {
 public:
     tlm_utils::simple_initiator_socket<test_driver> bar0_socket;
-    sc_in<bool> interrupt;
+    sc_in<bool> interrupt_in;
 
-    SC_CTOR(test_driver) : bar0_socket("bar0_socket")
+    SC_CTOR(test_driver) : bar0_socket("bar0_socket"), interrupt_in("interrupt_in")
     {
         SC_THREAD(test_sequence);
+        // DO NOT make sensitive to interrupt_in here
     }
 
 private:
@@ -87,51 +90,46 @@ private:
         cout << "\n[TEST] Starting PCIe device test" << endl;
         wait(100, SC_NS);
 
-        // Test 1: Read device status
         cout << "\n[TEST] Reading device status..." << endl;
         uint32_t status = mmio_read32(0x0004);
         cout << "[TEST] Status = 0x" << hex << status << dec << endl;
 
-        // Test 2: Configure matrix multiplication
-        uint32_t n = 4; // 4x4 matrices
+        uint32_t n = 4;
         cout << "\n[TEST] Configuring for " << n << "x" << n << " matrix multiplication" << endl;
 
-        mmio_write32(0x0008, n);      // Set dimension
-        mmio_write64(0x0010, 0x1000); // Matrix A at address 0x1000
-        mmio_write64(0x0018, 0x2000); // Matrix B at address 0x2000
-        mmio_write64(0x0020, 0x3000); // Matrix C at address 0x3000
+        mmio_write32(0x0008, n);
+        mmio_write64(0x0010, 0x1000);
+        mmio_write64(0x0018, 0x2000);
+        mmio_write64(0x0020, 0x3000);
 
-        // Enable interrupts
-        mmio_write32(0x002C, 0x1); // Enable DONE interrupt
+        mmio_write32(0x002C, 0x1);
 
-        // Test 3: Start computation
         cout << "[TEST] Starting computation..." << endl;
-        mmio_write32(0x0000, 0x1); // Set START bit
+        mmio_write32(0x0000, 0x1);
 
-        // Wait for interrupt
         cout << "[TEST] Waiting for completion..." << endl;
-        wait(interrupt.posedge_event());
+
+        // Wait for interrupt to go high
+        while (interrupt_in.read() == false)
+        {
+            wait(10, SC_NS);
+        }
 
         cout << "\n[TEST] Interrupt received!" << endl;
 
-        // Read status
         status = mmio_read32(0x0004);
         cout << "[TEST] Final status = 0x" << hex << status << dec << endl;
 
-        // Read interrupt status
         uint32_t int_status = mmio_read32(0x0028);
         cout << "[TEST] Interrupt status = 0x" << hex << int_status << dec << endl;
 
-        // Clear interrupt
         mmio_write32(0x0028, int_status);
 
         cout << "\n[TEST] Test completed successfully!" << endl;
-
         wait(100, SC_NS);
         sc_stop();
     }
 
-    // Helper functions for MMIO access
     uint32_t mmio_read32(uint64_t addr)
     {
         tlm::tlm_generic_payload trans;
@@ -192,29 +190,23 @@ private:
 
 int sc_main(int argc, char *argv[])
 {
-    // Instantiate components
     matrix_multiplier_pcie device("matrix_device");
     host_memory memory("host_memory");
     test_driver driver("test_driver");
 
-    // Signals
     sc_signal<bool> irq;
 
-    // Connections
     driver.bar0_socket.bind(device.bar0_target_socket);
     device.dma_initiator_socket.bind(memory.target_socket);
     device.interrupt(irq);
-    driver.interrupt(irq);
+    driver.interrupt_in(irq);
 
-    // Setup test data in host memory
-    // Matrix A (4x4) = identity matrix
     float matrix_a[16] = {
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1};
 
-    // Matrix B (4x4) = [2, 2, 2, 2, ...]
     float matrix_b[16];
     for (int i = 0; i < 16; i++)
         matrix_b[i] = 2.0f;
@@ -226,10 +218,8 @@ int sc_main(int argc, char *argv[])
     cout << "Starting SystemC Simulation" << endl;
     cout << "==================================================" << endl;
 
-    // Run simulation
     sc_start();
 
-    // Read result
     float matrix_c[16];
     memory.read_data(0x3000, matrix_c, sizeof(matrix_c));
 

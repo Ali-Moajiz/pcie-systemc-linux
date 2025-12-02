@@ -92,6 +92,7 @@ pcie_test_EXTERNAL_OBJECTS =
 
 pcie_test: CMakeFiles/pcie_test.dir/testbench.cpp.o
 pcie_test: CMakeFiles/pcie_test.dir/build.make
+pcie_test: libpcie_model.a
 pcie_test: CMakeFiles/pcie_test.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable pcie_test"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pcie_test.dir/link.txt --verbose=$(VERBOSE)

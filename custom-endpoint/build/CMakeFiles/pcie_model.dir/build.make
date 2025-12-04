@@ -69,10 +69,136 @@ include CMakeFiles/pcie_model.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/pcie_model.dir/flags.make
 
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.s
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o: CMakeFiles/pcie_model.dir/flags.make
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o: /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o -c /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c > CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.i
+
+CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.s
+
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o: CMakeFiles/pcie_model.dir/flags.make
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o: /home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o -c /home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc
 
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.i: cmake_force
@@ -86,7 +212,7 @@ CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o: CMakeFiles/pcie_model.dir/flags.make
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o: /home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o: CMakeFiles/pcie_model.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o -MF CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o.d -o CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o -c /home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc
 
 CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.i: cmake_force
@@ -99,17 +225,35 @@ CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/
 
 # Object files for target pcie_model
 pcie_model_OBJECTS = \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o" \
+"CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o" \
 "CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o" \
 "CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o"
 
 # External object files for target pcie_model
 pcie_model_EXTERNAL_OBJECTS =
 
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_common.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_socket.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/cosim_tlp.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgspc.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_cfgutil.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pcie_msix.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/platform.c.o
+libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/libpcie/src/pcie/pseudocore.c.o
 libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/libpcie-callbacks.cc.o
 libpcie_model.a: CMakeFiles/pcie_model.dir/home/moajiz/pcie-systemc-linux/pcie-model/tlm-modules/pcie-controller.cc.o
 libpcie_model.a: CMakeFiles/pcie_model.dir/build.make
 libpcie_model.a: CMakeFiles/pcie_model.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libpcie_model.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX static library libpcie_model.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/pcie_model.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pcie_model.dir/link.txt --verbose=$(VERBOSE)
 

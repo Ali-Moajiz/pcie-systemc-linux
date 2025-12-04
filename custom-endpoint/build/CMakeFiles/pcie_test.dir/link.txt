@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -Wextra -g -O2 -DSC_INCLUDE_DYNAMIC_PROCESSES CMakeFiles/pcie_test.dir/testbench.cpp.o -o pcie_test   -L/usr/local/systemc-git/lib  -Wl,-rpath,/usr/local/systemc-git/lib libpcie_model.a -lsystemc -lpthread 

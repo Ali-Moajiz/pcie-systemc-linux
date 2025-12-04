@@ -1,4 +1,9 @@
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/sctlmsoc_remote_port.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/sctlmsoc_soc.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/sctlmsoc_zynq.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/sctlmsoc_zynqmp.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/systemctlm-soc.dir
 /home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/pcie_model.dir
-/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/pcie_test.dir
+/home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/pcie_main.dir
 /home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/edit_cache.dir
 /home/moajiz/pcie-systemc-linux/custom-endpoint/build/CMakeFiles/rebuild_cache.dir

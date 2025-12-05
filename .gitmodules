@@ -9,4 +9,4 @@
 	url = https://github.com/buildroot/buildroot.git
 [submodule "qemu-vm/qemu"]
 	path = qemu-vm/qemu
-	url = https://github.com/qemu/qemu.git
+	url = https://github.com/ali-moajiz/custom-qemu.git

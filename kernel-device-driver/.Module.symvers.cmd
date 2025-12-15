@@ -1,0 +1,1 @@
+savedcmd_/home/moajiz/pcie-systemc-linux/kernel-device-driver/Module.symvers :=  scripts/mod/modpost -M        -o /home/moajiz/pcie-systemc-linux/kernel-device-driver/Module.symvers -T /home/moajiz/pcie-systemc-linux/kernel-device-driver/modules.order -i Module.symvers -e 

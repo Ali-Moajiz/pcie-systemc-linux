@@ -1194,6 +1194,7 @@ deps_/home/moajiz/pcie-systemc-linux/kernel-device-driver/custom_qemu_device_dri
     $(wildcard include/config/DMA_API_DEBUG) \
     $(wildcard include/config/NEED_DMA_MAP_STATE) \
   include/linux/dma-direction.h \
+  include/generated/uapi/linux/version.h \
   /home/moajiz/pcie-systemc-linux/kernel-device-driver/chardev.h \
 
 /home/moajiz/pcie-systemc-linux/kernel-device-driver/custom_qemu_device_driver.o: $(deps_/home/moajiz/pcie-systemc-linux/kernel-device-driver/custom_qemu_device_driver.o)

@@ -6,6 +6,8 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+#include <linux/device.h>
+#include <linux/version.h>
 #include "chardev.h"
 
 /* Each PCI device has 6 BAR IOs (base address register) as per the PCI spec.
@@ -56,6 +58,12 @@ static int pci_irq;
 static int major;
 static struct pci_dev *pdev;
 static void __iomem *mmio;
+
+/* Device class and device for automatic /dev node creation */
+static struct class *cpcidev_class;
+static struct device *cpcidev_device;
+static struct cdev cpcidev_cdev;
+static dev_t dev_num;
 
 static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
@@ -219,23 +227,61 @@ static irqreturn_t irq_handler(int irq, void *dev)
 static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 {
 	u8 val;
+	int ret;
 
 	pr_info("pci_probe\n");
 
-	major = register_chrdev(0, CDEV_NAME, &fops);
+	/* Allocate device number dynamically */
+	ret = alloc_chrdev_region(&dev_num, 0, 1, CDEV_NAME);
+	if (ret < 0) {
+		dev_err(&(dev->dev), "alloc_chrdev_region failed\n");
+		goto error;
+	}
+	major = MAJOR(dev_num);
+
+	/* Initialize and add character device */
+	cdev_init(&cpcidev_cdev, &fops);
+	cpcidev_cdev.owner = THIS_MODULE;
+	ret = cdev_add(&cpcidev_cdev, dev_num, 1);
+	if (ret < 0) {
+		dev_err(&(dev->dev), "cdev_add failed\n");
+		goto error_cdev_add;
+	}
+
+	/* Create device class - this allows automatic /dev node creation */
+	/* Note: class_create() API changed in kernel 6.4+ (removed THIS_MODULE parameter) */
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+		cpcidev_class = class_create("cpcidev_class");
+	#else
+		cpcidev_class = class_create(THIS_MODULE, "cpcidev_class");
+	#endif
+	if (IS_ERR(cpcidev_class)) {
+		dev_err(&(dev->dev), "class_create failed\n");
+		ret = PTR_ERR(cpcidev_class);
+		goto error_class;
+	}
+
+	/* Create device - this automatically creates /dev/cpcidev_pci */
+	cpcidev_device = device_create(cpcidev_class, NULL, dev_num, 
+	                                NULL, CDEV_NAME);
+	if (IS_ERR(cpcidev_device)) {
+		dev_err(&(dev->dev), "device_create failed\n");
+		ret = PTR_ERR(cpcidev_device);
+		goto error_device;
+	}
 
 	pdev = dev;
 
 	if (pci_enable_device(dev) < 0)
 	{
 		dev_err(&(pdev->dev), "pci_enable_device\n");
-		goto error;
+		goto error_pci;
 	}
 
 	if (pci_request_region(dev, BAR, "myregion0"))
 	{
 		dev_err(&(pdev->dev), "pci_request_region\n");
-		goto error;
+		goto error_pci;
 	}
 	mmio = pci_iomap(pdev, BAR, pci_resource_len(pdev, BAR));
 
@@ -246,7 +292,7 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (request_irq(pci_irq, irq_handler, IRQF_SHARED, "pci_irq_handler0", &major) < 0)
 	{
 		dev_err(&(dev->dev), "request_irq\n");
-		goto error;
+		goto error_pci;
 	}
 
 	/* Optional sanity checks. The PCI is ready now, all of this could also be called from fops. */
@@ -263,7 +309,7 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		if ((pci_resource_flags(dev, BAR) & IORESOURCE_MEM) != IORESOURCE_MEM)
 		{
 			dev_err(&(dev->dev), "pci_resource_flags\n");
-			goto error;
+			goto error_pci;
 		}
 
 		/* 1Mb, as defined by the "1 << 20" in QEMU's memory_region_init_io. Same as pci_resource_len. */
@@ -291,8 +337,19 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 			pr_info("io %x %x\n", i, ioread32((void *)(mmio + i)));
 		}
 	}
+	printk(KERN_INFO "CPCIDEV: /dev/%s created automatically (major=%d, minor=%d)\n", 
+	       CDEV_NAME, MAJOR(dev_num), MINOR(dev_num));
 	printk(KERN_INFO "pci_probe() returns\n");
 	return 0;
+
+error_pci:
+	device_destroy(cpcidev_class, dev_num);
+error_device:
+	class_destroy(cpcidev_class);
+error_class:
+	cdev_del(&cpcidev_cdev);
+error_cdev_add:
+	unregister_chrdev_region(dev_num, 1);
 error:
 	return 1;
 }
@@ -300,8 +357,17 @@ error:
 static void pci_remove(struct pci_dev *dev)
 {
 	pr_info("pci_remove\n");
+	free_irq(pci_irq, &major);
+	pci_iounmap(pdev, mmio);
 	pci_release_region(dev, BAR);
-	unregister_chrdev(major, CDEV_NAME);
+	
+	/* Destroy device and class - this removes /dev/cpcidev_pci */
+	device_destroy(cpcidev_class, dev_num);
+	class_destroy(cpcidev_class);
+	cdev_del(&cpcidev_cdev);
+	unregister_chrdev_region(dev_num, 1);
+	
+	pr_info("CPCIDEV: /dev/%s removed\n", CDEV_NAME);
 }
 
 static struct pci_driver pci_driver = {

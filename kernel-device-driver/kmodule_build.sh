@@ -7,7 +7,7 @@ export KERNEL_SRC=$(pwd)/output/build/linux-6.12.47
 
 # Step 2: Verify the paths
 echo "ARCH: $ARCH"
-echo "CROSS_COMPILE: $CROSS_COMPILE"
+echo "CROSS_COMPILE: $CROSS_COMPILE"x
 echo "KERNEL_SRC: $KERNEL_SRC"
 
 # Verify compiler exists
@@ -25,3 +25,5 @@ make -C $KERNEL_SRC M=$(pwd) ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE modules
 # Step 4: Verify the build
 ls -lh custom_qemu_device_driver.ko
 file custom_qemu_device_driver.ko
+
+echo "----------------------- D O N E   B U I L D I N G   T H E   K E R N E L   M O D U L E ------------------------------"

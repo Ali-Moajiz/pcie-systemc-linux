@@ -38,6 +38,12 @@
 #define IO_IRQ_STATUS 0x24
 #define QEMU_VENDOR_ID 0x1234
 
+#define IOCTL_SET_OP1_MATRIX   0x01
+#define IOCTL_SET_OP2_MATRIX   0x02
+#define IOCTL_GET_RESULT      0x03
+#define IOCTL_SET_OPCODE      0x04
+
+
 MODULE_LICENSE("GPL");
 
 static struct pci_device_id pci_ids[] = {
@@ -64,69 +70,151 @@ static struct class *cpcidev_class;
 static struct device *cpcidev_device;
 static struct cdev cpcidev_cdev;
 static dev_t dev_num;
+/*
+	Following function is calling in our case since in the user-space is calling the ioctl funtion, not read/write funtions
+*/
 
 static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-	int rv = 0;
-	int *ip;
-	int set;
-	printk(KERN_INFO "dev_ioctl() cmd: %x arg: %x \n", cmd, arg);
+	uint32_t kbuf[4][4];
+	uint32_t opcode;
+	int i, j;
+	void __user *uarg = (void __user *)arg;
 
-	if (cmd == 4)
+	printk(KERN_INFO "dev_ioctl() cmd: %u\n", cmd);
+
+	switch (cmd)
 	{
-		printk(KERN_INFO "retrieve op1.\n");
-		ip = (int *)arg;
-		*ip = ioread32((void *)(mmio + 0x10));
-		printk(KERN_INFO "op1: %x\n", *ip);
+
+	case IOCTL_SET_OP1_MATRIX:
+		if (copy_from_user(kbuf, uarg, sizeof(kbuf)))
+			return -EFAULT;
+
+		for (i = 0; i < 4; i++)
+		{
+			for (j = 0; j < 4; j++)
+			{
+				iowrite32(kbuf[i][j],
+						  mmio + 0x10 + ((i * 4 + j) * sizeof(uint32_t)));
+			}
+		}
+
+		printk(KERN_INFO "OP1 matrix written\n");
+		break;
+
+	case IOCTL_SET_OP2_MATRIX:
+		if (copy_from_user(kbuf, uarg, sizeof(kbuf)))
+			return -EFAULT;
+
+		for (i = 0; i < 4; i++)
+		{
+			for (j = 0; j < 4; j++)
+			{
+				iowrite32(kbuf[i][j],
+						  mmio + 0x50 + ((i * 4 + j) * sizeof(uint32_t)));
+			}
+		}
+
+		printk(KERN_INFO "OP2 matrix written\n");
+		break;
+
+	case IOCTL_SET_OPCODE:
+		if (copy_from_user(&opcode, uarg, sizeof(opcode)))
+			return -EFAULT;
+
+		iowrite32(opcode, mmio + 0x90);
+		printk(KERN_INFO "Opcode set to %u\n", opcode);
+		break;
+
+	case IOCTL_GET_RESULT:
+		/*
+		 * Reading result triggers matrix multiplication in device
+		 * Result matrix starts at 0xA0
+		 */
+		for (i = 0; i < 4; i++)
+		{
+			for (j = 0; j < 4; j++)
+			{
+				kbuf[i][j] =
+					ioread32(mmio + 0xA0 + ((i * 4 + j) * sizeof(uint32_t)));
+			}
+		}
+
+		if (copy_to_user(uarg, kbuf, sizeof(kbuf)))
+			return -EFAULT;
+
+		printk(KERN_INFO "Result matrix read\n");
+		break;
+
+	default:
+		return -EINVAL;
 	}
 
-	if (cmd == 5)
-	{
-		printk(KERN_INFO "retrieve op2.\n");
-		ip = (int *)arg;
-		*ip = ioread32((void *)(mmio + 0x14));
-		printk(KERN_INFO "op2: %x\n", *ip);
-	}
-
-	if (cmd == 6)
-	{
-		printk(KERN_INFO "retrieve opcode.\n");
-		ip = (int *)arg;
-		*ip = ioread32((void *)(mmio + 0x18));
-		printk(KERN_INFO "opcode: %x\n", *ip);
-	}
-
-	if (cmd == 7)
-	{
-		printk(KERN_INFO "retrieve result.\n");
-		ip = (int *)arg;
-		*ip = ioread32((void *)(mmio + 0x30));
-		printk(KERN_INFO "result: %x\n", *ip);
-	}
-
-	if (cmd == 8)
-	{
-		set = (int)arg;
-		printk(KERN_INFO "set op1 %x\n", set);
-		iowrite32(set, mmio + 0x10);
-	}
-
-	if (cmd == 9)
-	{
-		set = (int)arg;
-		printk(KERN_INFO "set op2 %x\n", set);
-		iowrite32(set, mmio + 0x14);
-	}
-
-	if (cmd == 10)
-	{
-		set = (int)arg;
-		printk(KERN_INFO "set opcode %x\n", set);
-		iowrite32(set, mmio + 0x18);
-	}
-
-	return rv;
+	return 0;
 }
+
+// static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+// {
+// 	int rv = 0;
+// 	int *ip;
+// 	int set;
+// 	printk(KERN_INFO "dev_ioctl() cmd: %x arg: %x \n", cmd, arg);
+
+// 	if (cmd == 4)
+// 	{
+// 		printk(KERN_INFO "retrieve op1.\n");
+// 		ip = (int *)arg;
+// 		*ip = ioread32((void *)(mmio + 0x10));
+// 		printk(KERN_INFO "op1: %x\n", *ip);
+// 	}
+
+// 	if (cmd == 5)
+// 	{
+// 		printk(KERN_INFO "retrieve op2.\n");
+// 		ip = (int *)arg;
+// 		*ip = ioread32((void *)(mmio + 0x14));
+// 		printk(KERN_INFO "op2: %x\n", *ip);
+// 	}
+
+// 	if (cmd == 6)
+// 	{
+// 		printk(KERN_INFO "retrieve opcode.\n");
+// 		ip = (int *)arg;
+// 		*ip = ioread32((void *)(mmio + 0x18));
+// 		printk(KERN_INFO "opcode: %x\n", *ip);
+// 	}
+
+// 	if (cmd == 7)
+// 	{
+// 		printk(KERN_INFO "retrieve result.\n");
+// 		ip = (int *)arg;
+// 		*ip = ioread32((void *)(mmio + 0x30));
+// 		printk(KERN_INFO "result: %x\n", *ip);
+// 	}
+
+// 	if (cmd == 8)
+// 	{
+// 		set = (int)arg;
+// 		printk(KERN_INFO "set op1 %x\n", set);
+// 		iowrite32(set, mmio + 0x10);
+// 	}
+
+// 	if (cmd == 9)
+// 	{
+// 		set = (int)arg;
+// 		printk(KERN_INFO "set op2 %x\n", set);
+// 		iowrite32(set, mmio + 0x14);
+// 	}
+
+// 	if (cmd == 10)
+// 	{
+// 		set = (int)arg;
+// 		printk(KERN_INFO "set opcode %x\n", set);
+// 		iowrite32(set, mmio + 0x18);
+// 	}
+
+// 	return rv;
+// }
 
 static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
@@ -165,15 +253,53 @@ static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff
 	{
 		if (copy_from_user((void *)&kbuf, buf, 4) || len != 4)
 		{
+			/*copy_from_user returns 0 on copy success*/
+			printk(KERN_ALERT "data copy failed in the kernel\n");
 			ret = -EFAULT;
 		}
 		else
 		{
+			printk(KERN_ALERT "data copied\n");
 			iowrite32(kbuf, mmio + *off);
 		}
 	}
 	return ret;
 }
+
+// static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff_t *off)
+// {
+// 	ssize_t ret = len;
+// 	u32 kbuf[4][4]; // 4x4 matrix
+
+// 	printk(KERN_INFO "CPCIDEV: write()\n");
+
+// 	// check that len is exactly the size of 4x4 matrix
+// 	if (len != sizeof(kbuf))
+// 	{
+// 		printk(KERN_ALERT "Invalid write size: %zu bytes\n", len);
+// 		return -EINVAL;
+// 	}
+
+// 	// copy from user
+// 	if (copy_from_user(kbuf, buf, sizeof(kbuf)))
+// 	{
+// 		printk(KERN_ALERT "Data copy failed in the kernel\n");
+// 		return -EFAULT;
+// 	}
+
+// 	printk(KERN_INFO "Data copied successfully\n");
+
+// 	// Example: write to MMIO (flattening the 2D array)
+// 	for (int i = 0; i < 4; i++)
+// 	{
+// 		for (int j = 0; j < 4; j++)
+// 		{
+// 			iowrite32(kbuf[i][j], mmio + (*off) + (i * 4 + j) * sizeof(u32));
+// 		}
+// 	}
+
+// 	return ret;
+// }
 
 static loff_t llseek(struct file *filp, loff_t off, int whence)
 {
@@ -189,9 +315,9 @@ static loff_t llseek(struct file *filp, loff_t off, int whence)
 static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.llseek = llseek,
-	.read = read,
-	.unlocked_ioctl = dev_ioctl,
-	.write = write,
+	.read = read,				 // it will be called when the user-space called read(fd, buf, count)
+	.unlocked_ioctl = dev_ioctl, // it will be called when the user-space called the ioctl(fd, cmd, arg) funtion
+	.write = write,				 // it will be called when the user-space called write(fd, buf, count)
 };
 
 static irqreturn_t irq_handler(int irq, void *dev)
@@ -233,7 +359,8 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 	/* Allocate device number dynamically */
 	ret = alloc_chrdev_region(&dev_num, 0, 1, CDEV_NAME);
-	if (ret < 0) {
+	if (ret < 0)
+	{
 		dev_err(&(dev->dev), "alloc_chrdev_region failed\n");
 		goto error;
 	}
@@ -243,28 +370,31 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	cdev_init(&cpcidev_cdev, &fops);
 	cpcidev_cdev.owner = THIS_MODULE;
 	ret = cdev_add(&cpcidev_cdev, dev_num, 1);
-	if (ret < 0) {
+	if (ret < 0)
+	{
 		dev_err(&(dev->dev), "cdev_add failed\n");
 		goto error_cdev_add;
 	}
 
-	/* Create device class - this allows automatic /dev node creation */
-	/* Note: class_create() API changed in kernel 6.4+ (removed THIS_MODULE parameter) */
-	#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
-		cpcidev_class = class_create("cpcidev_class");
-	#else
-		cpcidev_class = class_create(THIS_MODULE, "cpcidev_class");
-	#endif
-	if (IS_ERR(cpcidev_class)) {
+/* Create device class - this allows automatic /dev node creation */
+/* Note: class_create() API changed in kernel 6.4+ (removed THIS_MODULE parameter) */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+	cpcidev_class = class_create("cpcidev_class");
+#else
+	cpcidev_class = class_create(THIS_MODULE, "cpcidev_class");
+#endif
+	if (IS_ERR(cpcidev_class))
+	{
 		dev_err(&(dev->dev), "class_create failed\n");
 		ret = PTR_ERR(cpcidev_class);
 		goto error_class;
 	}
 
 	/* Create device - this automatically creates /dev/cpcidev_pci */
-	cpcidev_device = device_create(cpcidev_class, NULL, dev_num, 
-	                                NULL, CDEV_NAME);
-	if (IS_ERR(cpcidev_device)) {
+	cpcidev_device = device_create(cpcidev_class, NULL, dev_num,
+								   NULL, CDEV_NAME);
+	if (IS_ERR(cpcidev_device))
+	{
 		dev_err(&(dev->dev), "device_create failed\n");
 		ret = PTR_ERR(cpcidev_device);
 		goto error_device;
@@ -337,8 +467,8 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 			pr_info("io %x %x\n", i, ioread32((void *)(mmio + i)));
 		}
 	}
-	printk(KERN_INFO "CPCIDEV: /dev/%s created automatically (major=%d, minor=%d)\n", 
-	       CDEV_NAME, MAJOR(dev_num), MINOR(dev_num));
+	printk(KERN_INFO "CPCIDEV: /dev/%s created automatically (major=%d, minor=%d)\n",
+		   CDEV_NAME, MAJOR(dev_num), MINOR(dev_num));
 	printk(KERN_INFO "pci_probe() returns\n");
 	return 0;
 
@@ -360,13 +490,13 @@ static void pci_remove(struct pci_dev *dev)
 	free_irq(pci_irq, &major);
 	pci_iounmap(pdev, mmio);
 	pci_release_region(dev, BAR);
-	
+
 	/* Destroy device and class - this removes /dev/cpcidev_pci */
 	device_destroy(cpcidev_class, dev_num);
 	class_destroy(cpcidev_class);
 	cdev_del(&cpcidev_cdev);
 	unregister_chrdev_region(dev_num, 1);
-	
+
 	pr_info("CPCIDEV: /dev/%s removed\n", CDEV_NAME);
 }
 
@@ -396,3 +526,5 @@ static void myexit(void)
 
 module_init(myinit);
 module_exit(myexit);
+
+

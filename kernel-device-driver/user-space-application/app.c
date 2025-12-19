@@ -1,111 +1,67 @@
 /*
- *
- *
- *
- *
- *     Userspace application to be used in conkunction with the
- *     kernel module driver qemu_custom_device_driver.ko in order
- *     to access the cpcidev_pci driver.
- *
- *     @author: Mouzakitis Nikolaos (2023)
- *
- *
- *
+ * Minimal userspace application for CPCIDEV
+ * Demonstrates 4x4 matrix multiplication
  */
 
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <stdint.h>
+
 #include "../chardev.h"
+#define IOCTL_SET_OP1_MATRIX   0x01
+#define IOCTL_SET_OP2_MATRIX   0x02
+#define IOCTL_GET_RESULT      0x03
+#define IOCTL_SET_OPCODE      0x04
 
-#define BUF_SIZE 1024
-
-// global to printf from read/write functions.
-char buf[BUF_SIZE];
-
-// read from the device file.
-int read_dev(void *ptr, int no_bytes, int no_items, FILE *fp, int addr)
+int main(void)
 {
-    int rv;
+    int fd;
+    uint32_t A[4][4] = {
+        {1, 2, 3, 4},
+        {5, 6, 7, 8},
+        {9, 1, 2, 3},
+        {4, 5, 6, 7}
+    };
 
-    // read from device file.
-    fseek(fp, addr, 0);
-    rv = fread(ptr, no_bytes, no_items, fp);
+    uint32_t B[4][4] = {
+        {1, 0, 0, 0},
+        {0, 1, 0, 0},
+        {0, 0, 1, 0},
+        {0, 0, 0, 1}
+    };
 
-    printf("return value read(bytes):  %d\n ", rv);
-    for (int i = 0; i < 4; i++)
-        printf("%x ", buf[i]);
+    uint32_t C[4][4] = {0};
+    uint32_t opcode = 1; // matrix multiplication
 
-    printf("\n");
-}
-
-int main()
-{
-    FILE *fp;
-    int rv;
-    int op1, op2, opcode, result;
-
-    void *ptr;
-    int fd = open("/dev/cpcidev_pci", O_RDWR);
-
-    printf("userspce program run.\n");
-    memset(buf, 0x0, BUF_SIZE);
-    ptr = buf;
-    if (fd == -1)
-    {
-        printf("error opening device /open()\n");
-        return -1;
+    fd = open("/dev/cpcidev_pci", O_RDWR);
+    if (fd < 0) {
+        perror("open");
+        return 1;
     }
 
-    printf("device opened success.\n");
-    printf("Perform addition 5+3\n");
+    printf("Device opened\n");
 
-    op1 = 5;
-    op2 = 3;
-    opcode = 1;
-    printf("set op1 %x\n", op1);
-    ioctl(fd, 8, op1);
-    printf("set op2 %x\n", op2);
-    ioctl(fd, 9, op2);
-    printf("set opcode %x\n", opcode);
-    ioctl(fd, 10, opcode);
+    /* Write matrices */
+    ioctl(fd, IOCTL_SET_OP1_MATRIX, A);
+    ioctl(fd, IOCTL_SET_OP2_MATRIX, B);
 
-    printf("ioctl to get op1\n");
-    ioctl(fd, 4, &op1);
-    printf("retrieved op1: %x\n", op1);
+    /* Set opcode */
+    ioctl(fd, IOCTL_SET_OPCODE, &opcode);
 
-    printf("ioctl to get op2\n");
-    ioctl(fd, 5, &op2);
-    printf("retrieved op1: %x\n", op2);
+    /* Read result */
+    ioctl(fd, IOCTL_GET_RESULT, C);
 
-    printf("ioctl to get opcode\n");
-    ioctl(fd, 6, &opcode);
-    printf("retrieved opcode: %x\n", opcode);
-
-    // perform the addition.
-    // read result.
-
-    ioctl(fd, 7, &result);
-    printf("retrived result: %x\n", result);
-
-    printf("Perform 5-3\n");
-    opcode = 2;
-    ioctl(fd, 10, opcode);
-
-    ioctl(fd, 7, &result);
-    printf("retrived result: %x\n", result);
-
-    printf("Perform 5*3\n");
-    opcode = 3;
-    ioctl(fd, 10, opcode);
-    ioctl(fd, 7, &result);
-    printf("retrived result: %x\n", result);
+    /* Print result */
+    printf("Result matrix:\n");
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%6u ", C[i][j]);
+        }
+        printf("\n");
+    }
 
     close(fd);
-
     return 0;
 }

@@ -150,15 +150,6 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			}
 		}
 
-		// Print kbuf matrix in kernel module
-		printk(KERN_INFO "kbuf matrix:\n");
-		for (int row = 0; row < 4; row++)
-		{
-			printk(KERN_INFO "[%u %u %u %u]\n",
-				   kbuf[row][0], kbuf[row][1],
-				   kbuf[row][2], kbuf[row][3]);
-		}
-
 		if (copy_to_user(uarg, kbuf, sizeof(kbuf)))
 			return -EFAULT;
 
@@ -175,53 +166,16 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 //Not using this function from the use-space
 static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
-	ssize_t ret;
-	u32 kbuf;
-	printk(KERN_INFO "CPCIDEV: read() len: %lx offset: %lx\n", len, *off);
-	if (*off % 4 || len == 0)
-	{
-		ret = 0;
-	}
-	else
-	{
-		kbuf = ioread32(mmio + *off);
-		if (copy_to_user(buf, (void *)&kbuf, 4))
-		{
-			printk(KERN_ALERT "fault on copy_to_user\n");
-			ret = -EFAULT;
-		}
-		else
-		{
-			ret = 4;
-			(*off)++;
-		}
-	}
-	return ret;
+	//not using this 
+	return 0;
 }
 
 //Not using this function from the use-space
 static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff_t *off)
 {
-	ssize_t ret;
-	u32 kbuf;
-	printk(KERN_INFO "CPCIDEV: write()\n");
 
-	ret = len;
-	if (!(*off % 4))
-	{
-		if (copy_from_user((void *)&kbuf, buf, 4) || len != 4)
-		{
-			/*copy_from_user returns 0 on copy success*/
-			printk(KERN_ALERT "data copy failed in the kernel\n");
-			ret = -EFAULT;
-		}
-		else
-		{
-			printk(KERN_ALERT "data copied\n");
-			iowrite32(kbuf, mmio + *off);
-		}
-	}
-	return ret;
+	//not using this 
+	return 0;
 }
 
 

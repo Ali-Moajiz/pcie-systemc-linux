@@ -38,11 +38,17 @@
 #define IO_IRQ_STATUS 0x24
 #define QEMU_VENDOR_ID 0x1234
 
-#define IOCTL_SET_OP1_MATRIX   0x01
-#define IOCTL_SET_OP2_MATRIX   0x02
-#define IOCTL_GET_RESULT      0x03
-#define IOCTL_SET_OPCODE      0x04
+// #define IOCTL_SET_OP1_MATRIX 0x01
+// #define IOCTL_SET_OP2_MATRIX 0x02
+// #define IOCTL_GET_RESULT 0x03
+// #define IOCTL_SET_OPCODE 0x04
 
+#define CPCIDEV_MAGIC 'c'
+
+#define IOCTL_SET_OP1_MATRIX _IOW(CPCIDEV_MAGIC, 1, uint32_t[4][4])
+#define IOCTL_SET_OP2_MATRIX _IOW(CPCIDEV_MAGIC, 2, uint32_t[4][4])
+#define IOCTL_GET_RESULT _IOR(CPCIDEV_MAGIC, 3, uint32_t[4][4])
+#define IOCTL_SET_OPCODE _IOW(CPCIDEV_MAGIC, 4, uint32_t)
 
 MODULE_LICENSE("GPL");
 
@@ -87,6 +93,7 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	{
 
 	case IOCTL_SET_OP1_MATRIX:
+		printk(KERN_INFO "IOCTL_SET_OP1_MATRIX\n");
 		if (copy_from_user(kbuf, uarg, sizeof(kbuf)))
 			return -EFAULT;
 
@@ -103,6 +110,7 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case IOCTL_SET_OP2_MATRIX:
+		printk(KERN_INFO "IOCTL_SET_OP2_MATRIX\n");
 		if (copy_from_user(kbuf, uarg, sizeof(kbuf)))
 			return -EFAULT;
 
@@ -119,6 +127,7 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case IOCTL_SET_OPCODE:
+		printk(KERN_INFO "IOCTL_SET_OPCODE\n");
 		if (copy_from_user(&opcode, uarg, sizeof(opcode)))
 			return -EFAULT;
 
@@ -131,6 +140,7 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		 * Reading result triggers matrix multiplication in device
 		 * Result matrix starts at 0xA0
 		 */
+		printk(KERN_INFO "IOCTL_GET_RESULT\n");
 		for (i = 0; i < 4; i++)
 		{
 			for (j = 0; j < 4; j++)
@@ -138,6 +148,15 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				kbuf[i][j] =
 					ioread32(mmio + 0xA0 + ((i * 4 + j) * sizeof(uint32_t)));
 			}
+		}
+
+		// Print kbuf matrix in kernel module
+		printk(KERN_INFO "kbuf matrix:\n");
+		for (int row = 0; row < 4; row++)
+		{
+			printk(KERN_INFO "[%u %u %u %u]\n",
+				   kbuf[row][0], kbuf[row][1],
+				   kbuf[row][2], kbuf[row][3]);
 		}
 
 		if (copy_to_user(uarg, kbuf, sizeof(kbuf)))
@@ -153,69 +172,7 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-// static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-// {
-// 	int rv = 0;
-// 	int *ip;
-// 	int set;
-// 	printk(KERN_INFO "dev_ioctl() cmd: %x arg: %x \n", cmd, arg);
-
-// 	if (cmd == 4)
-// 	{
-// 		printk(KERN_INFO "retrieve op1.\n");
-// 		ip = (int *)arg;
-// 		*ip = ioread32((void *)(mmio + 0x10));
-// 		printk(KERN_INFO "op1: %x\n", *ip);
-// 	}
-
-// 	if (cmd == 5)
-// 	{
-// 		printk(KERN_INFO "retrieve op2.\n");
-// 		ip = (int *)arg;
-// 		*ip = ioread32((void *)(mmio + 0x14));
-// 		printk(KERN_INFO "op2: %x\n", *ip);
-// 	}
-
-// 	if (cmd == 6)
-// 	{
-// 		printk(KERN_INFO "retrieve opcode.\n");
-// 		ip = (int *)arg;
-// 		*ip = ioread32((void *)(mmio + 0x18));
-// 		printk(KERN_INFO "opcode: %x\n", *ip);
-// 	}
-
-// 	if (cmd == 7)
-// 	{
-// 		printk(KERN_INFO "retrieve result.\n");
-// 		ip = (int *)arg;
-// 		*ip = ioread32((void *)(mmio + 0x30));
-// 		printk(KERN_INFO "result: %x\n", *ip);
-// 	}
-
-// 	if (cmd == 8)
-// 	{
-// 		set = (int)arg;
-// 		printk(KERN_INFO "set op1 %x\n", set);
-// 		iowrite32(set, mmio + 0x10);
-// 	}
-
-// 	if (cmd == 9)
-// 	{
-// 		set = (int)arg;
-// 		printk(KERN_INFO "set op2 %x\n", set);
-// 		iowrite32(set, mmio + 0x14);
-// 	}
-
-// 	if (cmd == 10)
-// 	{
-// 		set = (int)arg;
-// 		printk(KERN_INFO "set opcode %x\n", set);
-// 		iowrite32(set, mmio + 0x18);
-// 	}
-
-// 	return rv;
-// }
-
+//Not using this function from the use-space
 static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
 	ssize_t ret;
@@ -242,6 +199,7 @@ static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off
 	return ret;
 }
 
+//Not using this function from the use-space
 static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff_t *off)
 {
 	ssize_t ret;
@@ -266,40 +224,6 @@ static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff
 	return ret;
 }
 
-// static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff_t *off)
-// {
-// 	ssize_t ret = len;
-// 	u32 kbuf[4][4]; // 4x4 matrix
-
-// 	printk(KERN_INFO "CPCIDEV: write()\n");
-
-// 	// check that len is exactly the size of 4x4 matrix
-// 	if (len != sizeof(kbuf))
-// 	{
-// 		printk(KERN_ALERT "Invalid write size: %zu bytes\n", len);
-// 		return -EINVAL;
-// 	}
-
-// 	// copy from user
-// 	if (copy_from_user(kbuf, buf, sizeof(kbuf)))
-// 	{
-// 		printk(KERN_ALERT "Data copy failed in the kernel\n");
-// 		return -EFAULT;
-// 	}
-
-// 	printk(KERN_INFO "Data copied successfully\n");
-
-// 	// Example: write to MMIO (flattening the 2D array)
-// 	for (int i = 0; i < 4; i++)
-// 	{
-// 		for (int j = 0; j < 4; j++)
-// 		{
-// 			iowrite32(kbuf[i][j], mmio + (*off) + (i * 4 + j) * sizeof(u32));
-// 		}
-// 	}
-
-// 	return ret;
-// }
 
 static loff_t llseek(struct file *filp, loff_t off, int whence)
 {
@@ -315,9 +239,9 @@ static loff_t llseek(struct file *filp, loff_t off, int whence)
 static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.llseek = llseek,
-	.read = read,				 // it will be called when the user-space called read(fd, buf, count)
+	.read = read,				 // it will be called when the user-space called read(fd, buf, count) [not using at this point of time]
 	.unlocked_ioctl = dev_ioctl, // it will be called when the user-space called the ioctl(fd, cmd, arg) funtion
-	.write = write,				 // it will be called when the user-space called write(fd, buf, count)
+	.write = write,				 // it will be called when the user-space called write(fd, buf, count) [not using at this point of time]
 };
 
 static irqreturn_t irq_handler(int irq, void *dev)
@@ -526,5 +450,3 @@ static void myexit(void)
 
 module_init(myinit);
 module_exit(myexit);
-
-

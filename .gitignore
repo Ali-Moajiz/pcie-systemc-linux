@@ -1,0 +1,7 @@
+# Build artifacts
+build/
+custom-endpoint/build/
+CMakeFiles/
+*.o
+*.log
+

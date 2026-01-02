@@ -304,8 +304,7 @@ using namespace std;
 // }
 
 #include <sys/types.h>
-
-// Helper function to check if socket exists
+// Helper to check if the socket file exists on disk
 bool socket_exists(const char *path)
 {
     return (access(path, F_OK) == 0);
@@ -313,73 +312,39 @@ bool socket_exists(const char *path)
 
 int sc_main(int argc, char *argv[])
 {
-    // 1. Parse command line arguments
-    const char *sk_path = (argc > 1) ? argv[1] : "/tmp/qemu-rport";
-    int sync_quantum_ns = (argc > 2) ? atoi(argv[2]) : 10000;
+    // 1. Setup path (defaulting to unix socket)
+    const char *sk_descr = (argc > 1) ? argv[1] : "unix:/tmp/qemu-rport";
+    const char *socket_file = (strncmp(sk_descr, "unix:", 5) == 0) ? sk_descr + 5 : sk_descr;
 
-    // Extract actual file path (remove "unix:" prefix)
-    const char *socket_file = (strncmp(sk_path, "unix:", 5) == 0) ? sk_path + 5 : sk_path;
+    printf("=== SystemC RemotePort Adaptor ===\n");
+    printf("Target Socket: %s\n", sk_descr);
 
-    // 2. Clean up old socket file if it exists
+    // 2. Clean up old socket to avoid "Address already in use"
     if (socket_exists(socket_file))
     {
-        printf("SystemC: Removing old socket: %s\n", socket_file);
+        printf("Cleaning up old socket: %s\n", socket_file);
         unlink(socket_file);
     }
 
-    // 3. Create a dummy signal for the required reset port
+    // 3. Instantiate Adaptor
     sc_signal<bool> rst("rst");
+    // fd = -1 tells the adaptor to create the socket server
+    remoteport_tlm *rp_adapter = new remoteport_tlm("rp_adapter", -1, sk_descr, NULL, true);
+    rp_adapter->rst(rst);
 
-    // 4. Instantiate the Remote Port Adapter
-    printf("SystemC: Creating RemotePort adapter...\n");
-    printf("  Socket: %s\n", sk_path);
-    printf("  Sync Quantum: %d ns\n", sync_quantum_ns);
+    // 4. Reset Sequence
+    rst.write(true);
+    sc_start(SC_ZERO_TIME); // Initialize threads
+
+    printf("De-asserting reset... Simulation will now block on accept()\n");
     fflush(stdout);
-
-    remoteport_tlm rp_adapter("rp-adapter", sync_quantum_ns, sk_path);
-
-    // 5. Bind the reset port
-    rp_adapter.rst(rst);
-
-    // 6. Initialize reset signal
     rst.write(false);
 
-    printf("SystemC: RemotePort adapter created\n");
-    fflush(stdout);
+    // 5. Execution Phase
+    // This call triggers the internal rp_sk_open() which calls listen() and accept()
+    // The simulation will freeze here until you run the QEMU command.
+    sc_start();
 
-    // 7. Start simulation with a long timeout to keep it running
-    // This prevents the simulation from exiting immediately
-    printf("SystemC: Starting simulation...\n");
-    fflush(stdout);
-
-    // Wait a bit for socket to be created
-    sc_start(1, SC_SEC);
-
-        // 8. Check if socket was created
-    if (socket_exists(socket_file))
-    {
-        printf("SystemC: ✓ Socket created successfully at: %s\n", socket_file);
-    }
-    else
-    {
-        printf("SystemC: ✗ WARNING - Socket NOT created at: %s\n", socket_file);
-        return 1;
-    }
-    
-    fflush(stdout);
-
-    printf("SystemC: Waiting for QEMU connection...\n");
-    printf("SystemC: Start QEMU now in another terminal\n");
-    fflush(stdout);
-
-    // 9. Continue simulation indefinitely
-    sc_start(100, SC_MS); // Short delta for bind
-    if (!socket_exists("/tmp/qemu-rport"))
-    {
-        fprintf(stderr, "BIND FAILED\n");
-        return 1;
-    }
-
-    printf("SystemC: Simulation ended\n");
+    printf("Simulation finished.\n");
     return 0;
 }

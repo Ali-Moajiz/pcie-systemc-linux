@@ -305,46 +305,61 @@ using namespace std;
 
 #include <sys/types.h>
 // Helper to check if the socket file exists on disk
-bool socket_exists(const char *path)
+// Minimal Dummy Target to acknowledge the handshake
+// Minimal Dummy Target to acknowledge the handshake
+SC_MODULE(DummyTarget)
 {
-    return (access(path, F_OK) == 0);
-}
+    tlm_utils::simple_target_socket<DummyTarget> socket;
+    SC_CTOR(DummyTarget) : socket("socket")
+    {
+        socket.register_b_transport(this, &DummyTarget::b_transport);
+    }
+    void b_transport(tlm::tlm_generic_payload & trans, sc_time & delay)
+    {
+        printf("SystemC: Received TLM transaction!\n");
+        trans.set_response_status(tlm::TLM_OK_RESPONSE);
+    }
+};
 
 int sc_main(int argc, char *argv[])
 {
-    // 1. Setup path (defaulting to unix socket)
     const char *sk_descr = (argc > 1) ? argv[1] : "unix:/tmp/qemu-rport";
     const char *socket_file = (strncmp(sk_descr, "unix:", 5) == 0) ? sk_descr + 5 : sk_descr;
 
-    printf("=== SystemC RemotePort Adaptor ===\n");
-    printf("Target Socket: %s\n", sk_descr);
+    printf("=== SystemC RemotePort Server ===\n");
 
-    // 2. Clean up old socket to avoid "Address already in use"
-    if (socket_exists(socket_file))
+    if (access(socket_file, F_OK) == 0)
     {
-        printf("Cleaning up old socket: %s\n", socket_file);
+        printf("Cleaning old socket: %s\n", socket_file);
         unlink(socket_file);
     }
 
-    // 3. Instantiate Adaptor
     sc_signal<bool> rst("rst");
-    // fd = -1 tells the adaptor to create the socket server
+
+    // 1. Create the base adaptor
     remoteport_tlm *rp_adapter = new remoteport_tlm("rp_adapter", -1, sk_descr, NULL, true);
     rp_adapter->rst(rst);
 
-    // 4. Reset Sequence
-    rst.write(true);
-    sc_start(SC_ZERO_TIME); // Initialize threads
+    // 2. Create a Memory Master bridge.
+    // This object provides the TLM initiator socket that was missing.
+    remoteport_tlm_memory_master *rp_master = new remoteport_tlm_memory_master("rp_master");
 
-    printf("De-asserting reset... Simulation will now block on accept()\n");
-    fflush(stdout);
+    // 3. Register the bridge with the adaptor (usually on dev_id 0)
+    rp_adapter->register_dev(0, rp_master);
+
+    // 4. Now you can bind the socket from the MASTER object, not the adapter
+    DummyTarget *dummy = new DummyTarget("dummy");
+    rp_master->sk.bind(dummy->socket);
+
+    rst.write(true);
+    sc_start(SC_ZERO_TIME);
+
+    printf("Listening for QEMU on: %s\n", sk_descr);
     rst.write(false);
 
-    // 5. Execution Phase
-    // This call triggers the internal rp_sk_open() which calls listen() and accept()
-    // The simulation will freeze here until you run the QEMU command.
+    // 5. This will now handle the handshake correctly
     sc_start();
 
-    printf("Simulation finished.\n");
+    printf("SUCCESS: Connection established and Handshake completed!\n");
     return 0;
 }

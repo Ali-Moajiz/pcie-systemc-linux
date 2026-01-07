@@ -317,6 +317,18 @@ SC_MODULE(DummyTarget)
     void b_transport(tlm::tlm_generic_payload & trans, sc_time & delay)
     {
         printf("SystemC: Received TLM transaction!\n");
+        uint64_t addr = trans.get_address();
+
+        if (trans.is_read())
+        {
+            uint32_t data = 0xABCD;
+            memcpy(trans.get_data_ptr(), &data, 5);
+            printf("SystemC: Received READ at 0x%lx, returning 0x%x\n", addr, data);
+        }
+        else
+        {
+            printf("SystemC: Received WRITE at 0x%lx\n", addr);
+        }
         trans.set_response_status(tlm::TLM_OK_RESPONSE);
     }
 };
@@ -336,18 +348,12 @@ int sc_main(int argc, char *argv[])
 
     sc_signal<bool> rst("rst");
 
-    // 1. Create the base adaptor
     remoteport_tlm *rp_adapter = new remoteport_tlm("rp_adapter", -1, sk_descr, NULL, true);
     rp_adapter->rst(rst);
 
-    // 2. Create a Memory Master bridge.
-    // This object provides the TLM initiator socket that was missing.
     remoteport_tlm_memory_master *rp_master = new remoteport_tlm_memory_master("rp_master");
-
-    // 3. Register the bridge with the adaptor (usually on dev_id 0)
     rp_adapter->register_dev(0, rp_master);
 
-    // 4. Now you can bind the socket from the MASTER object, not the adapter
     DummyTarget *dummy = new DummyTarget("dummy");
     rp_master->sk.bind(dummy->socket);
 
@@ -356,10 +362,13 @@ int sc_main(int argc, char *argv[])
 
     printf("Listening for QEMU on: %s\n", sk_descr);
     rst.write(false);
-
-    // 5. This will now handle the handshake correctly
+    
+    // **ADD THIS**: Give SystemC time to fully set up the socket listener
+    sc_start(100, SC_MS);  // Wait 100ms for socket to be ready
+    
+    printf("Socket ready. Waiting for QEMU connection...\n");
+    
+    // Now start main simulation
     sc_start();
-
-    printf("SUCCESS: Connection established and Handshake completed!\n");
     return 0;
 }

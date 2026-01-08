@@ -303,10 +303,40 @@ using namespace std;
 //     return 0;
 // }
 
-#include <sys/types.h>
-// Helper to check if the socket file exists on disk
-// Minimal Dummy Target to acknowledge the handshake
-// Minimal Dummy Target to acknowledge the handshake
+// 1. MONITOR MODULE: Sits in the middle to "Sniff" packets
+SC_MODULE(TrafficMonitor)
+{
+    tlm_utils::simple_target_socket<TrafficMonitor> target_socket;
+    tlm_utils::simple_initiator_socket<TrafficMonitor> init_socket;
+
+    SC_CTOR(TrafficMonitor) : target_socket("target_socket"), init_socket("init_socket")
+    {
+        target_socket.register_b_transport(this, &TrafficMonitor::b_transport);
+    }
+
+    void b_transport(tlm::tlm_generic_payload & trans, sc_time & delay)
+    {
+        uint64_t addr = trans.get_address();
+        uint32_t len = trans.get_data_length();
+        bool is_read = trans.is_read();
+
+        printf("\n[MONITOR] %s | Addr: 0x%lx | Len: %u bytes\n",
+               is_read ? "READ " : "WRITE", addr, len);
+
+        // Pass the transaction through to the actual DummyTarget
+        init_socket->b_transport(trans, delay);
+
+        if (is_read && trans.get_response_status() == tlm::TLM_OK_RESPONSE)
+        {
+            uint32_t val = 0;
+            if (len <= 4)
+                memcpy(&val, trans.get_data_ptr(), len);
+            printf("[MONITOR] Response Data: 0x%x\n", val);
+        }
+    }
+};
+
+// 2. DUMMY TARGET: Your endpoint
 SC_MODULE(DummyTarget)
 {
     tlm_utils::simple_target_socket<DummyTarget> socket;
@@ -316,20 +346,23 @@ SC_MODULE(DummyTarget)
     }
     void b_transport(tlm::tlm_generic_payload & trans, sc_time & delay)
     {
-        printf("SystemC: Received TLM transaction!\n");
         uint64_t addr = trans.get_address();
-
         if (trans.is_read())
         {
-            uint32_t data = 0xABCD;
-            memcpy(trans.get_data_ptr(), &data, 5);
-            printf("SystemC: Received READ at 0x%lx, returning 0x%x\n", addr, data);
+            uint32_t data = 0xABCD1234; // Example data
+            memcpy(trans.get_data_ptr(), &data, trans.get_data_length());
+            trans.set_response_status(tlm::TLM_OK_RESPONSE);
         }
         else
         {
-            printf("SystemC: Received WRITE at 0x%lx\n", addr);
+            // Log the data written by QEMU
+            unsigned char *ptr = trans.get_data_ptr();
+            printf("SystemC: Data received: 0x");
+            for (int i = 0; i < trans.get_data_length(); i++)
+                printf("%02x", ptr[i]);
+            printf("\n");
+            trans.set_response_status(tlm::TLM_OK_RESPONSE);
         }
-        trans.set_response_status(tlm::TLM_OK_RESPONSE);
     }
 };
 
@@ -348,27 +381,33 @@ int sc_main(int argc, char *argv[])
 
     sc_signal<bool> rst("rst");
 
+    // Initialize Adapter
+    // Note: 'true' as the last argument usually makes the adapter the server (it will call listen/accept)
     remoteport_tlm *rp_adapter = new remoteport_tlm("rp_adapter", -1, sk_descr, NULL, true);
     rp_adapter->rst(rst);
 
     remoteport_tlm_memory_master *rp_master = new remoteport_tlm_memory_master("rp_master");
     rp_adapter->register_dev(0, rp_master);
 
+    // Instantiate modules
+    TrafficMonitor *monitor = new TrafficMonitor("monitor");
     DummyTarget *dummy = new DummyTarget("dummy");
-    rp_master->sk.bind(dummy->socket);
 
+    // Bindings: RP_Master -> Monitor -> DummyTarget
+    rp_master->sk.bind(monitor->target_socket);
+    monitor->init_socket.bind(dummy->socket);
+
+    // Initial Reset
     rst.write(true);
     sc_start(SC_ZERO_TIME);
-
-    printf("Listening for QEMU on: %s\n", sk_descr);
     rst.write(false);
-    
-    // **ADD THIS**: Give SystemC time to fully set up the socket listener
-    sc_start(100, SC_MS);  // Wait 100ms for socket to be ready
-    
-    printf("Socket ready. Waiting for QEMU connection...\n");
-    
-    // Now start main simulation
+
+    printf("Waiting for QEMU connection on %s...\n", sk_descr);
+
+    // Start simulation.
+    // The libremote-port adapter creates its own thread to handle accept()
+    // but sc_start() is required for the SystemC kernel to process events.
     sc_start();
+
     return 0;
 }

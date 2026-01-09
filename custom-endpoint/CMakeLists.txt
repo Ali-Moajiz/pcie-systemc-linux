@@ -33,7 +33,7 @@ message(STATUS "Using SYSTEMC_HOME = ${SYSTEMC_HOME}")
 # Compiler setup
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -O2 -DSC_INCLUDE_DYNAMIC_PROCESSES")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g3 -O0 -DSC_INCLUDE_DYNAMIC_PROCESSES")
 
 # ======================================================
 # Locate SystemC Library

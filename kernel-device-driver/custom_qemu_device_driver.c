@@ -333,17 +333,17 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		}
 		pr_info("irq %x\n", pci_irq);
 
-		/* Initial value of the IO memory. */
-		for (i = 0; i < 0x28; i += 4)
-		{
-			pr_info("io %x %x\n", i, ioread32((void *)(mmio + i)));
-		}
+		// /* Initial value of the IO memory. */
+		// for (i = 0; i < 0x28; i += 4)
+		// {
+			iowrite32(0xAB, mmio);
+		// }
 
-		/* Read again values of the IO memory. */
-		for (i = 0; i < 0x28; i += 4)
-		{
-			pr_info("io %x %x\n", i, ioread32((void *)(mmio + i)));
-		}
+		// /* Read again values of the IO memory. */
+		// for (i = 0; i < 0x28; i += 4)
+		// {
+		// 	pr_info("io %x %x\n", i, ioread32((void *)(mmio + i)));
+		// }
 	}
 	printk(KERN_INFO "CPCIDEV: /dev/%s created automatically (major=%d, minor=%d)\n",
 		   CDEV_NAME, MAJOR(dev_num), MINOR(dev_num));

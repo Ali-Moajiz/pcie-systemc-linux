@@ -13,3 +13,6 @@ rootfs/
 
 # Downloaded kernel/Alpine source archives
 downloads/
+
+# QEMU shared directory
+shared_dir/

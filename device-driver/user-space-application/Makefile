@@ -1,7 +1,7 @@
 CC ?= gcc
 
 CFLAGS ?= -Wall -O2
-TARGET := custom_device_app
+TARGET := app
 
 SRCS := app.c
 OBJS := $(SRCS:.c=.o)

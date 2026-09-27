@@ -4,10 +4,6 @@
 [submodule "libsystemctlm-soc"]
 	path = libsystemctlm-soc
 	url = https://github.com/Xilinx/libsystemctlm-soc.git
-[submodule "buildroot"]
-	path = buildroot
-	url = https://github.com/ali-moajiz/buildroot.git
-	branch = custom-buildroot
 [submodule "qemu-vm/qemu"]
 	path = qemu-vm/qemu
 	url = https://github.com/Ali-Moajiz/custom-qemu.git

@@ -1,4 +1,46 @@
 # PCIe SystemC-QEMU Co-Simulation Project (WIP, Learning different implementation techniques)
+## temperory Notes:
+
+./build-kernel.sh --arch x86_64
+
+must be installed packages:
+
+sudo apt update
+
+sudo apt install -y \
+    build-essential \
+    bc \
+    bison \
+    flex \
+    libssl-dev \
+    libelf-dev \
+    libncurses-dev \
+    pkg-config \
+    cpio \
+    gzip \
+    xz-utils \
+    curl \
+    tar \
+    patch
+
+project architecture:
+
+ <project-root>/
+├── scripts/
+│   ├── build-kernel.sh      → writes kernel/<arch>/
+│   └── build-rootfs.sh      → writes rootfs/<arch>/
+├── kernel/                  (created by you; build-kernel.sh populates <arch>/)
+├── rootfs/                  (created by you; build-rootfs.sh populates <arch>/)
+└── kernel_driver/
+    ├── chardev.h
+    ├── custom_qemu_device_driver.c
+    ├── Makefile
+    ├── kmodule_build.sh     → reads ../kernel/<arch>/build.env automatically
+    └── user-space-application/
+
+Compilation Seq
+
+The compilation sequence should be: first build the Linux kernel using build-kernel.sh, which produces the kernel image and kernel/<arch>/build.env containing the architecture, compiler prefix, and kernel build directory. Next, build the kernel module using kmodule_build.sh, which reads this build.env to ensure the driver is compiled against exactly the same kernel and architecture. Then compile the userspace application, using the same architecture/toolchain information so its binary matches the target system. Finally, build the rootfs using build-rootfs.sh, embedding the compiled .ko driver and userspace application into the rootfs before packaging it as rootfs.cpio.gz. The resulting kernel image + rootfs.cpio.gz can then be passed to QEMU to boot Linux, load the driver, and execute the userspace application.
 
 ## Overview
 

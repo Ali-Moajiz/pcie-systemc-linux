@@ -1,6 +1,6 @@
-# Makefile for custom_qemu_device_driver kernel module
+# Makefile for pcie_driver kernel module
 
-obj-m += custom_qemu_device_driver.o
+obj-m += pcie_driver.o
 
 # Default kernel source (can be overridden)
 KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build

@@ -5,3 +5,11 @@ CMakeFiles/
 *.o
 *.log
 
+# Kernel build output
+kernel/
+
+# Root filesystem build output
+rootfs/
+
+# Downloaded kernel/Alpine source archives
+downloads/

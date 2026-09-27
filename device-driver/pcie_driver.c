@@ -1,5 +1,5 @@
-#include <asm/uaccess.h> /* put_user */
-#include <linux/cdev.h>	 /* cdev_ */
+#include <linux/uaccess.h>   /* copy_from_user, copy_to_user */
+#include <linux/cdev.h>      /* cdev_ */
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -14,11 +14,11 @@
  *
  * Each BAR corresponds to an address range that can be used to communicate with the PCI.
  *
- * Eech BAR is of one of the two types:
+ * Each BAR is of one of the two types:
  *
  * - IORESOURCE_IO: must be accessed with inX and outX
  * - IORESOURCE_MEM: must be accessed with ioreadX and iowriteX
- *   	This is the saner method apparently, and what the edu device uses.
+ *      This is the saner method apparently, and what the edu device uses.
  *
  * The length of each region is defined BY THE HARDWARE, and communicated to software
  * via the configuration registers.
@@ -38,22 +38,10 @@
 #define IO_IRQ_STATUS 0x24
 #define QEMU_VENDOR_ID 0x1234
 
-// #define IOCTL_SET_OP1_MATRIX 0x01
-// #define IOCTL_SET_OP2_MATRIX 0x02
-// #define IOCTL_GET_RESULT 0x03
-// #define IOCTL_SET_OPCODE 0x04
-
-#define CPCIDEV_MAGIC 'c'
-
-#define IOCTL_SET_OP1_MATRIX _IOW(CPCIDEV_MAGIC, 1, uint32_t[4][4])
-#define IOCTL_SET_OP2_MATRIX _IOW(CPCIDEV_MAGIC, 2, uint32_t[4][4])
-#define IOCTL_GET_RESULT _IOR(CPCIDEV_MAGIC, 3, uint32_t[4][4])
-#define IOCTL_SET_OPCODE _IOW(CPCIDEV_MAGIC, 4, uint32_t)
-
 MODULE_LICENSE("GPL");
 
 static struct pci_device_id pci_ids[] = {
-	// creating a struct pci_device_id matching the vendor id and device id.
+	/* creating a struct pci_device_id matching the vendor id and device id. */
 	{
 		PCI_DEVICE(QEMU_VENDOR_ID, EDU_DEVICE_ID),
 	},
@@ -61,9 +49,9 @@ static struct pci_device_id pci_ids[] = {
 		0,
 	}};
 
-// pci_ids need to be exported into user space to allow
-// hotplug and kernel modules know what module works with what
-// hardware device.
+/* pci_ids need to be exported into user space to allow
+ * hotplug and kernel modules know what module works with what
+ * hardware device. */
 MODULE_DEVICE_TABLE(pci, pci_ids);
 
 static int pci_irq;
@@ -76,10 +64,10 @@ static struct class *cpcidev_class;
 static struct device *cpcidev_device;
 static struct cdev cpcidev_cdev;
 static dev_t dev_num;
-/*
-	Following function is calling in our case since in the user-space is calling the ioctl funtion, not read/write funtions
-*/
 
+/*
+ * Following function is called from user-space via ioctl().
+ */
 static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	uint32_t kbuf[4][4];
@@ -163,21 +151,19 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-//Not using this function from the use-space
+/* Not using this function from user-space */
 static ssize_t read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
-	//not using this 
+	/* not using this */
 	return 0;
 }
 
-//Not using this function from the use-space
+/* Not using this function from user-space */
 static ssize_t write(struct file *filp, const char __user *buf, size_t len, loff_t *off)
 {
-
-	//not using this 
+	/* not using this */
 	return 0;
 }
-
 
 static loff_t llseek(struct file *filp, loff_t off, int whence)
 {
@@ -193,9 +179,9 @@ static loff_t llseek(struct file *filp, loff_t off, int whence)
 static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.llseek = llseek,
-	.read = read,				 // it will be called when the user-space called read(fd, buf, count) [not using at this point of time]
-	.unlocked_ioctl = dev_ioctl, // it will be called when the user-space called the ioctl(fd, cmd, arg) funtion
-	.write = write,				 // it will be called when the user-space called write(fd, buf, count) [not using at this point of time]
+	.read = read,                /* called when user-space calls read(fd, buf, count) [not used] */
+	.unlocked_ioctl = dev_ioctl, /* called when user-space calls ioctl(fd, cmd, arg) */
+	.write = write,              /* called when user-space calls write(fd, buf, count) [not used] */
 };
 
 static irqreturn_t irq_handler(int irq, void *dev)
@@ -309,7 +295,7 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 		/* Check that we are using MEM instead of IO.
 		 *
-		 * In QEMU, the type is defiened by either:
+		 * In QEMU, the type is defined by either:
 		 *
 		 * - PCI_BASE_ADDRESS_SPACE_IO
 		 * - PCI_BASE_ADDRESS_SPACE_MEMORY
@@ -333,17 +319,8 @@ static int pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		}
 		pr_info("irq %x\n", pci_irq);
 
-		// /* Initial value of the IO memory. */
-		// for (i = 0; i < 0x28; i += 4)
-		// {
-			iowrite32(0xAB, mmio);
-		// }
-
-		// /* Read again values of the IO memory. */
-		// for (i = 0; i < 0x28; i += 4)
-		// {
-		// 	pr_info("io %x %x\n", i, ioread32((void *)(mmio + i)));
-		// }
+		/* Initial value of the IO memory. */
+		iowrite32(0xAB, mmio);
 	}
 	printk(KERN_INFO "CPCIDEV: /dev/%s created automatically (major=%d, minor=%d)\n",
 		   CDEV_NAME, MAJOR(dev_num), MINOR(dev_num));
@@ -387,7 +364,7 @@ static struct pci_driver pci_driver = {
 
 static int myinit(void)
 {
-	// registration of the PCI driver.
+	/* registration of the PCI driver. */
 	if (pci_register_driver(&pci_driver) < 0)
 	{
 		printk(KERN_INFO "CPCIDEV error registering the custom_qemu_device_driver\n");

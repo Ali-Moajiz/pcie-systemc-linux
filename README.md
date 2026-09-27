@@ -1,9 +1,10 @@
 # PCIe SystemC-QEMU Co-Simulation Project (WIP, Learning different implementation techniques)
+
 ## temperory Notes:
 
 ./build-kernel.sh --arch x86_64
 
-must be installed packages:
+## must be installed packages:
 
 sudo apt update
 
@@ -23,7 +24,7 @@ sudo apt install -y \
     tar \
     patch
 
-project architecture:
+## project architecture:
 
  <project-root>/
 ├── scripts/
@@ -38,9 +39,10 @@ project architecture:
     ├── kmodule_build.sh     → reads ../kernel/<arch>/build.env automatically
     └── user-space-application/
 
-Compilation Seq
+## Compilation Seq
 
-The compilation sequence should be: first build the Linux kernel using build-kernel.sh, which produces the kernel image and kernel/<arch>/build.env containing the architecture, compiler prefix, and kernel build directory. Next, build the kernel module using kmodule_build.sh, which reads this build.env to ensure the driver is compiled against exactly the same kernel and architecture. Then compile the userspace application, using the same architecture/toolchain information so its binary matches the target system. Finally, build the rootfs using build-rootfs.sh, embedding the compiled .ko driver and userspace application into the rootfs before packaging it as rootfs.cpio.gz. The resulting kernel image + rootfs.cpio.gz can then be passed to QEMU to boot Linux, load the driver, and execute the userspace application.
+Run sequence paragraph
+The compilation sequence should be: first build the Linux kernel using build-kernel.sh, which generates the kernel image and kernel/<arch>/build.env containing the architecture, toolchain, and kernel build information. Next, build the kernel module using device-driver/kmodule_build.sh, which uses this kernel build information and produces pcie_driver.ko. Then build the userspace application using device-driver/user-space-application/app_build.sh, producing the app executable for the same target architecture. After both are built, run prepare-shared-dir.sh, which creates shared_dir/ and copies pcie_driver.ko and app into it. Finally, build the rootfs using build-rootfs.sh and boot QEMU with the generated kernel and rootfs; shared_dir/ can then be exposed to the QEMU guest so the driver can be loaded and the application executed without embedding them directly into the rootfs.
 
 ## Overview
 

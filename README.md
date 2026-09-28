@@ -24,6 +24,10 @@ sudo apt install -y \
     tar \
     patch
 
+### For QEMU Build, the following packages are required:
+
+sudo apt update && sudo apt install -y python3-venv python3-tomli python3-pip python3-setuptools python3-wheel ninja-build meson libglib2.0-dev debootstrap cpio gzip
+
 ## project architecture:
 
  <project-root>/
@@ -43,6 +47,157 @@ sudo apt install -y \
 
 Run sequence paragraph
 The compilation sequence should be: first build the Linux kernel using build-kernel.sh, which generates the kernel image and kernel/<arch>/build.env containing the architecture, toolchain, and kernel build information. Next, build the kernel module using device-driver/kmodule_build.sh, which uses this kernel build information and produces pcie_driver.ko. Then build the userspace application using device-driver/user-space-application/app_build.sh, producing the app executable for the same target architecture. After both are built, run prepare-shared-dir.sh, which creates shared_dir/ and copies pcie_driver.ko and app into it. Finally, build the rootfs using build-rootfs.sh and boot QEMU with the generated kernel and rootfs; shared_dir/ can then be exposed to the QEMU guest so the driver can be loaded and the application executed without embedding them directly into the rootfs.
+
+./scripts/build-rootfs.sh \
+    --arch x86_64 \
+    --packages "iperf3,tcpdump,gdb" \
+    --clean
+
+# QEMU Build and Run Steps
+
+## 1. Build Custom QEMU
+
+```bash
+cd ~/pcie-systemc-linux/qemu-vm/qemu
+
+mkdir -p build
+cd build
+
+../configure --target-list=x86_64-softmmu
+make -j$(nproc)
+```
+
+Verify the QEMU build:
+
+```bash
+./qemu-system-x86_64 --version
+```
+
+Verify that the custom `pcie-mm` device is available:
+
+```bash
+./qemu-system-x86_64 -device help | grep pcie-mm
+```
+
+For subsequent QEMU source changes, only rebuild:
+
+```bash
+cd ~/pcie-systemc-linux/qemu-vm/qemu/build
+make -j$(nproc)
+```
+
+---
+
+## 2. Run QEMU
+
+Go to the QEMU build directory:
+
+```bash
+cd ~/pcie-systemc-linux/qemu-vm/qemu/build
+```
+
+Run QEMU:
+
+```bash
+./qemu-system-x86_64 \
+    -M q35 \
+    -m 2G \
+    -kernel ../../../kernel/x86_64/linux-6.6.30/arch/x86/boot/bzImage \
+    -initrd ../../../rootfs/x86_64/rootfs.cpio.gz \
+    -append "console=ttyS0" \
+    -nographic \
+    -netdev user,id=net0 \
+    -device virtio-net-pci,netdev=net0 \
+    -fsdev local,id=fsdev0,path=../../../shared_dir,security_model=none \
+    -device virtio-9p-pci,fsdev=fsdev0,mount_tag=hostshare \
+    -device pcie-root-port,id=rootport0,chassis=1,slot=10 \
+    -chardev socket,id=rp_socket,path=/tmp/qemu-rport,server=off \
+    -device pcie-mm,rp-chardev=rp_socket,bus=rootport0,addr=0x0
+```
+
+> **Note:** The SystemC/remote-port side should be running so that `/tmp/qemu-rport` is available for the `pcie-mm` device.
+
+---
+
+## 3. Mount the Host Shared Directorysss
+
+Once Linux boots inside QEMU:
+
+```bash
+mkdir -p /mnt/hostshare
+```
+
+Mount the shared directory:
+
+```bash
+mount -t 9p -o trans=virtio,version=9p2000.L hostshare /mnt/hostshare
+```
+
+Verify its contents:
+
+```bash
+ls -l /mnt/hostshare
+```
+
+Expected files:
+
+```text
+app
+pcie_driver.ko
+```
+
+---
+
+## 4. Load the PCIe Kernel Driver
+
+```bash
+cd /mnt/hostshare
+
+insmod pcie_driver.ko
+```
+
+Verify the driver:
+
+```bash
+lsmod
+```
+
+Check kernel messages:
+
+```bash
+dmesg | tail -50
+```
+
+---
+
+## 5. Run the Userspace Application
+
+```bash
+cd /mnt/hostshare
+
+chmod +x app
+./app
+```
+
+---
+
+## Runtime Sequence
+
+```text
+Build QEMU
+    ↓
+Start SystemC / Remote-Port Side
+    ↓
+Run QEMU with bzImage + rootfs.cpio.gz
+    ↓
+Linux Boots
+    ↓
+Mount shared_dir
+    ↓
+Load pcie_driver.ko
+    ↓
+Run ./app
+```
 
 ## Overview
 
